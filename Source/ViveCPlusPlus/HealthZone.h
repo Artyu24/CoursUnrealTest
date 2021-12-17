@@ -19,9 +19,6 @@ public:
 	UPROPERTY()
 		UBoxComponent* CollisionMesh;
 
-	UPROPERTY()
-		class AViveCPlusPlusCharacter* Character;
-
 	UPROPERTY(EditAnywhere)
 		bool isBad;
 
@@ -29,7 +26,7 @@ public:
 		int changeHeal;
 
 	UPROPERTY()
-		FTimerHandle UnusedHandle;
+		FTimerHandle timerLife;
 
 protected:
 	// Called when the game starts or when spawned

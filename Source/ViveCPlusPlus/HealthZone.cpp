@@ -37,15 +37,15 @@ void AHealthZone::Tick(float DeltaTime)
 
 void AHealthZone::OnOverlapBegin(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Character = Cast<AViveCPlusPlusCharacter>(OtherActor);
+	AViveCPlusPlusCharacter* Character = Cast<AViveCPlusPlusCharacter>(OtherActor);
 
 	FTimerDelegate timerDelegate;
 	timerDelegate.BindUFunction(Character, FName("SetLife"), changeHeal);
-	GetWorldTimerManager().SetTimer(UnusedHandle, timerDelegate, 1, true);
+	GetWorldTimerManager().SetTimer(timerLife, timerDelegate, 1, true);
 }
 
 void AHealthZone::OnOverlapEnd(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherIndex)
 {
-	GetWorldTimerManager().ClearTimer(UnusedHandle);
+	GetWorldTimerManager().ClearTimer(timerLife);
 }
 
