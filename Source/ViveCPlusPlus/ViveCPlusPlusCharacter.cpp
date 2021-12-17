@@ -24,7 +24,6 @@ AViveCPlusPlusCharacter::AViveCPlusPlusCharacter()
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
 
-	//Double Jump
 	JumpMaxCount = 2;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
