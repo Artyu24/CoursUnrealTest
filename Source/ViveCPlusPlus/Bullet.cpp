@@ -39,8 +39,6 @@ void ABullet::Tick(float DeltaTime)
 void ABullet::OnOverlapBegin(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GLog->Log("MUR");
-
 	FRotator rotationDecall = GetActorRotation() + FRotator(-90, 0, 0);
 
 	ADecalActor* decal = GetWorld()->SpawnActor<ADecalActor>(GetActorLocation(), rotationDecall);
