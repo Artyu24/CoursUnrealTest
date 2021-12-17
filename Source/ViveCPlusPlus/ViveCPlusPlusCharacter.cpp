@@ -120,7 +120,7 @@ void AViveCPlusPlusCharacter::SetLife(int changeLife)
 	if (life + changeLife <= 0)
 		Ragdoll();
 
-	if(life + changeLife <= maxLife && life + changeLife >= 0)
+	if(life + changeLife <= maxLife)
 		life += changeLife;
 
 	GLog->Log("Health :  " + FString::FromInt(GetLife()));

@@ -19,6 +19,8 @@ ABullet::ABullet()
 	MeshComponent->SetupAttachment(RootComponent);
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent >(TEXT("MovementComponent"));
+	MovementComponent->InitialSpeed = 2000;
+	MovementComponent->MaxSpeed = 2000;
 }
 
 // Called when the game starts or when spawned
