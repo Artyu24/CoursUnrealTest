@@ -16,7 +16,7 @@ public:
 	AJumpPad();
 
 	UPROPERTY(VisibleAnywhere)
-	class UStaticMeshComponent* MeshComponent;
+		class UStaticMeshComponent* MeshComponent;
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,5 +27,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };

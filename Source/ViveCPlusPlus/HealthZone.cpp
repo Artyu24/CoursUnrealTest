@@ -14,10 +14,6 @@ AHealthZone::AHealthZone()
 	CollisionMesh = CreateDefaultSubobject<UBoxComponent>(FName("Collision Mesh"));
 	SetRootComponent(CollisionMesh);
 
-	isInRange = false;
-
-	//FComponentBeginOverlapSignature OnComponentBeginOverlap;
-	//FComponentEndOverlapSignature OnComponentEndOverlap;
 }
 
 // Called when the game starts or when spawned
@@ -37,24 +33,19 @@ void AHealthZone::BeginPlay()
 void AHealthZone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	timer += DeltaTime;
-
-	if(isInRange && timer >= 1)
-	{
-		timer = 0;
-		Character->SetLife(changeHeal);
-		GLog->Log("Health :  " + FString::FromInt(Character->GetLife()));
-	}
 }
 
 void AHealthZone::OnOverlapBegin(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	isInRange = true;
 	Character = Cast<AViveCPlusPlusCharacter>(OtherActor);
+
+	FTimerDelegate timerDelegate;
+	timerDelegate.BindUFunction(Character, FName("SetLife"), changeHeal);
+	GetWorldTimerManager().SetTimer(UnusedHandle, timerDelegate, 1, true);
 }
 
 void AHealthZone::OnOverlapEnd(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherIndex)
 {
-	isInRange = false;
+	GetWorldTimerManager().ClearTimer(UnusedHandle);
 }
+

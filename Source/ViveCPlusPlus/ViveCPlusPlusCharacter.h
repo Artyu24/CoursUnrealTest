@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Bullet.h"
 #include "GameFramework/Character.h"
 #include "ViveCPlusPlusCharacter.generated.h"
 
@@ -25,6 +26,12 @@ class AViveCPlusPlusCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, Category = Pickup)
 		class USceneComponent* HeldItem;
 
+	UPROPERTY(EditDefaultsOnly, Category = Respawn)
+		TSubclassOf<AActor> actorToSpawn;
+
+	UPROPERTY(EditDefaultsOnly, Category = Painball)
+		TSubclassOf<ABullet> actorBullet;
+
 public:
 	AViveCPlusPlusCharacter();
 
@@ -38,27 +45,36 @@ public:
 
 	//Speed
 	UPROPERTY(EditAnywhere, Category = Speed)
-	float walkSpeed = 300.f;
+		float walkSpeed = 300.f;
 
 	UPROPERTY(EditAnywhere, Category = Speed)
-	float runSpeed = 600.f;
+		float runSpeed = 600.f;
 
 	//Health
 	UPROPERTY(EditAnywhere, Category = Health)
-	int life = 50;
+		int life = 50;
 
 	UPROPERTY(EditAnywhere, Category = Health)
-	int maxLife = 100;
+		int maxLife = 100;
+
+	UPROPERTY()
+		AActor* objectPick;
+
+	UPROPERTY()
+		bool isItemInHand;
+
+	UPROPERTY()
+		FTimerHandle respawnTimer;
 
 protected:
 
 	void BeginPlay() override;
 
 	UFUNCTION()
-	void OnStartRun();
+		void OnStartRun();
 
 	UFUNCTION()
-	void OnStopRun();
+		void OnStopRun();
 
 
 	/** Resets HMD orientation in VR. */
@@ -100,9 +116,21 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	UFUNCTION()
-	int GetLife();
+		int GetLife();
 
 	UFUNCTION()
-	void SetLife(int changeLife);
+		void SetLife(int changeLife);
+
+	UFUNCTION()
+		void PickupItem();
+
+	UFUNCTION()
+		void Ragdoll();
+
+	UFUNCTION()
+		void Respawn();
+
+	UFUNCTION()
+		void FirePaintball();
 };
 

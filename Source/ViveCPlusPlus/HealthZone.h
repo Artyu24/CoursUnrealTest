@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "HealthZone.generated.h"
 
@@ -16,38 +17,31 @@ public:
 	AHealthZone();
 
 	UPROPERTY()
-	class UBoxComponent* CollisionMesh;
+		UBoxComponent* CollisionMesh;
 
 	UPROPERTY()
-	bool isInRange;
-
-	UPROPERTY()
-	class AViveCPlusPlusCharacter* Character;
+		class AViveCPlusPlusCharacter* Character;
 
 	UPROPERTY(EditAnywhere)
-	bool isBad;
+		bool isBad;
 
 	UPROPERTY()
-	int changeHeal;
+		int changeHeal;
 
 	UPROPERTY()
-	FTimerHandle UnusedHandle;
+		FTimerHandle UnusedHandle;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UPROPERTY()
-	float timer;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherIndex, bool bFromSweep, const FHitResult& SweepResult);
+		void OnOverlapBegin(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnOverlapEnd(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherIndex);
-
+		void OnOverlapEnd(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherIndex);
 };

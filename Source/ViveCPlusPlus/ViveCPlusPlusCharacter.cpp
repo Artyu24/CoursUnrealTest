@@ -1,6 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ViveCPlusPlusCharacter.h"
+
+#include "Bullet.h"
+#include "DrawDebugHelpers.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -20,6 +23,9 @@ AViveCPlusPlusCharacter::AViveCPlusPlusCharacter()
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
+
+	//Double Jump
+	JumpMaxCount = 2;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -66,6 +72,10 @@ void AViveCPlusPlusCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AViveCPlusPlusCharacter::OnStartRun);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &AViveCPlusPlusCharacter::OnStopRun);
 
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AViveCPlusPlusCharacter::PickupItem);
+
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AViveCPlusPlusCharacter::FirePaintball);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &AViveCPlusPlusCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AViveCPlusPlusCharacter::MoveRight);
 
@@ -76,6 +86,7 @@ void AViveCPlusPlusCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAxis("TurnRate", this, &AViveCPlusPlusCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AViveCPlusPlusCharacter::LookUpAtRate);
+
 
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AViveCPlusPlusCharacter::TouchStarted);
@@ -106,8 +117,78 @@ void AViveCPlusPlusCharacter::OnStopRun()
 
 void AViveCPlusPlusCharacter::SetLife(int changeLife)
 {
-	if(life + changeLife <= maxLife || life + changeLife >= 0)
+	if(life + changeLife <= maxLife && life + changeLife >= 0)
 		life += changeLife;
+
+	GLog->Log("Health :  " + FString::FromInt(GetLife()));
+}
+
+void AViveCPlusPlusCharacter::PickupItem()
+{
+	FVector Start = StartLineTrace->GetComponentLocation();
+	FVector End = FollowCamera->GetForwardVector() * 1500 + Start;
+	FHitResult Hit;
+	FCollisionQueryParams TraceParams;
+	TraceParams.AddIgnoredActor(this);
+
+	DrawDebugLine(GetWorld(), Start, End, FColor::Orange, false, 2.0f);
+
+	if (!isItemInHand)
+	{
+		if (GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, ECC_PhysicsBody, TraceParams))
+		{
+			if (Hit.bBlockingHit && Hit.GetComponent()->Mobility == EComponentMobility::Movable)
+			{
+				isItemInHand = true;
+				Hit.Component->SetSimulatePhysics(false);
+				Hit.Actor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+				Hit.Actor->SetActorLocation(HeldItem->GetComponentLocation());
+				objectPick = Hit.GetActor();
+			}
+		}
+	}
+	else if(isItemInHand)
+	{
+		isItemInHand = false;
+		UPrimitiveComponent* object = Cast<UPrimitiveComponent>(objectPick->GetComponentByClass(UPrimitiveComponent::StaticClass()));
+		object->SetSimulatePhysics(true);
+		objectPick->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+		objectPick = Hit.GetActor();
+	}
+}
+
+void AViveCPlusPlusCharacter::Ragdoll()
+{
+	USkeletalMeshComponent* mesh = this->GetMesh();
+
+	mesh->SetSimulatePhysics(true);
+	mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	this->GetCharacterMovement()->DisableMovement();
+
+	AController* controller = GetWorld()->GetFirstPlayerController();
+	if(controller == nullptr)
+		return;
+
+	controller->UnPossess();
+
+	GetWorldTimerManager().SetTimer(respawnTimer, this, &AViveCPlusPlusCharacter::Respawn, 3, false);
+
+}
+
+void AViveCPlusPlusCharacter::Respawn()
+{
+	AViveCPlusPlusCharacter* character = GetWorld()->SpawnActor<AViveCPlusPlusCharacter>(actorToSpawn, FVector(-970, -346, 202), FRotator(0,0,0));
+
+	AController* controller = GetWorld()->GetFirstPlayerController();
+	controller->Possess(character);
+}
+
+void AViveCPlusPlusCharacter::FirePaintball()
+{
+	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(actorBullet, StartLineTrace->GetComponentLocation(), FollowCamera->GetComponentRotation());
 }
 
 int AViveCPlusPlusCharacter::GetLife()
