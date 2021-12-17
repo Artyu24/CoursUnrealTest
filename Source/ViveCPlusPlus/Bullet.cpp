@@ -41,7 +41,8 @@ void ABullet::Tick(float DeltaTime)
 void ABullet::OnOverlapBegin(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	FRotator rotationDecall = GetActorRotation() + FRotator(-90, 0, 0);
+	FRotator rotationDecall = GetActorRotation() - FRotator(-90, 0, 0);
+	rotationDecall.Normalize();
 
 	ADecalActor* decal = GetWorld()->SpawnActor<ADecalActor>(GetActorLocation(), rotationDecall);
 	decal->SetDecalMaterial(decalKirby);
