@@ -51,10 +51,10 @@ public:
 		float runSpeed = 600.f;
 
 	//Health
-	UPROPERTY(EditAnywhere, Category = Health)
+	UPROPERTY(EditAnywhere, Category = Health, BlueprintReadWrite)
 		int life = 50;
 
-	UPROPERTY(EditAnywhere, Category = Health)
+	UPROPERTY(EditAnywhere, Category = Health, BlueprintReadWrite)
 		int maxLife = 100;
 
 	UPROPERTY()
