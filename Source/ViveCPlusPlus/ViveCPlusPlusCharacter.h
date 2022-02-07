@@ -63,6 +63,9 @@ public:
 	UPROPERTY()
 		bool isItemInHand;
 
+	UPROPERTY(EditAnywhere, Category = Health, BlueprintReadWrite)
+		bool isDead = false;
+
 	UPROPERTY()
 		FTimerHandle respawnTimer;
 
@@ -118,7 +121,7 @@ public:
 	UFUNCTION()
 		int GetLife();
 
-	UFUNCTION()
+	UFUNCTION(Category = Health, BlueprintCallable)
 		void SetLife(int changeLife);
 
 	UFUNCTION()

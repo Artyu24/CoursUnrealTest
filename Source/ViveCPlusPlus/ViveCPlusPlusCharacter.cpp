@@ -101,7 +101,6 @@ void AViveCPlusPlusCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
-
 }
 
 void AViveCPlusPlusCharacter::OnStartRun()
@@ -116,13 +115,19 @@ void AViveCPlusPlusCharacter::OnStopRun()
 
 void AViveCPlusPlusCharacter::SetLife(int changeLife)
 {
-	if (life + changeLife <= 0)
-		Ragdoll();
+	if(!isDead)
+	{
+		if (life + changeLife <= 0)
+		{
+			Ragdoll();
+			isDead = true;
+		}
 
-	if(life + changeLife <= maxLife)
-		life += changeLife;
+		if(life + changeLife <= maxLife)
+			life += changeLife;
 
-	GLog->Log("Health :  " + FString::FromInt(GetLife()));
+		GLog->Log("Health :  " + FString::FromInt(GetLife()));
+	}
 }
 
 void AViveCPlusPlusCharacter::PickupItem()
